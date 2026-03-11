@@ -1,7 +1,21 @@
-import { members, initialDivisions } from "@/lib/mockData";
+"use client";
+
+import { useAppContext } from "@/context/AppContext";
 import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function Home() {
+  const { members, divisions, isLoading } = useAppContext();
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+        <p>Fetching dashboard data...</p>
+      </div>
+    );
+  }
+
   const activeMembers = members.filter(m => m.status === 'Active').length;
 
   return (
@@ -22,23 +36,23 @@ export default function Home() {
         </div>
         <div className={`${styles.statCard} glass`}>
           <h3>Divisions</h3>
-          <p className={styles.statValue}>{initialDivisions.length}</p>
+          <p className={styles.statValue}>{divisions.length}</p>
         </div>
       </div>
 
       <section className={styles.quickView}>
         <div className={`${styles.sectionHeader}`}>
           <h3>Recently Added</h3>
-          <button className={styles.viewAll}>View All</button>
+          <Link href="/master-list" className={styles.viewAll}>View All</Link>
         </div>
         <div className={styles.recentList}>
-          {members.slice(0, 3).map(member => (
+          {members.slice(-3).reverse().map(member => (
             <div key={member.id} className={`${styles.memberRow} glass`}>
               <div className={styles.memberInfo}>
-                <div className={styles.miniAvatar}>{member.name[0]}</div>
+                <div className={styles.miniAvatar}>{member.name[0].toUpperCase()}</div>
                 <div>
                   <p className={styles.memberName}>{member.name}</p>
-                  <p className={styles.memberMeta}>{member.division} • {member.range}</p>
+                  <p className={styles.memberMeta}>{member.division} • {member.range || 'No range set'}</p>
                 </div>
               </div>
               <div className={`${styles.statusBadge} ${styles[member.status.toLowerCase()]}`}>
@@ -46,6 +60,7 @@ export default function Home() {
               </div>
             </div>
           ))}
+          {members.length === 0 && <p className={styles.emptyMsg}>No talent found in database.</p>}
         </div>
       </section>
     </div>
