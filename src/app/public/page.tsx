@@ -60,15 +60,6 @@ export default function PublicMobileView() {
         return () => clearInterval(interval);
     }, []);
 
-    if (isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-                <p>Syncing with resonance...</p>
-            </div>
-        );
-    }
-
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDivision, setSelectedDivision] = useState<string>('Unassigned');
 
@@ -129,6 +120,16 @@ export default function PublicMobileView() {
             return 'Just now';
         }
     }, [hasMounted, lastUpdated]);
+
+    // Moving isLoading check here to ensure Hooks are always called in the same order
+    if (isLoading) {
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p>Syncing with resonance...</p>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.mobileContainer}>
