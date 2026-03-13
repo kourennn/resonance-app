@@ -7,21 +7,23 @@ import styles from './page.module.css';
 export default function PublicMobileView() {
     const { members, divisions, lastUpdated, isLoading } = useAppContext();
 
-    // Constant dates
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-    const startYear = 2026;
-    const seasonNumber = (currentYear - startYear) * 12 + currentMonth;
-
     const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
     const [isOverdue, setIsOverdue] = useState(false);
     const [hasMounted, setHasMounted] = useState(false);
+    const [seasonNumber, setSeasonNumber] = useState<number>(0);
 
     useEffect(() => {
         setHasMounted(true);
+        
+        // Calculate season on client only to avoid hydration mismatch
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = now.getMonth() + 1;
+        const sY = 2026;
+        setSeasonNumber((y - sY) * 12 + m);
+
         const saved = localStorage.getItem('resonance_last_shuffle');
-        const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+        const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59);
         
         const updateTimer = () => {
           const currentTime = new Date();
@@ -56,7 +58,7 @@ export default function PublicMobileView() {
         updateTimer();
         const interval = setInterval(updateTimer, 1000);
         return () => clearInterval(interval);
-    }, [currentMonth, currentYear]);
+    }, []);
 
     if (isLoading) {
         return (
@@ -132,14 +134,19 @@ export default function PublicMobileView() {
         <div className={styles.mobileContainer}>
             <header className={styles.mobileHeader}>
                 <h1 className="text-gradient">RESONANCE 余情</h1>
-                <div className={styles.seasonBadge}>SEASON {seasonNumber}</div>
                 
-                <div className={`${styles.publicTimer} ${isOverdue ? styles.overdue : ''}`}>
-                    <span className={styles.timerLabel}>{isOverdue ? 'SHUFFLE OVERDUE' : 'NEXT SHUFFLE IN'}</span>
-                    <span className={styles.timerValue}>
-                        {timeLeft ? `${timeLeft.d}d ${timeLeft.h}h ${timeLeft.m}m` : '--:--:--'}
-                    </span>
-                </div>
+                {hasMounted && (
+                    <>
+                        <div className={styles.seasonBadge}>SEASON {seasonNumber}</div>
+                        
+                        <div className={`${styles.publicTimer} ${isOverdue ? styles.overdue : ''}`}>
+                            <span className={styles.timerLabel}>{isOverdue ? 'SHUFFLE OVERDUE' : 'NEXT SHUFFLE IN'}</span>
+                            <span className={styles.timerValue}>
+                                {timeLeft ? `${timeLeft.d}d ${timeLeft.h}h ${timeLeft.m}m` : '--:--:--'}
+                            </span>
+                        </div>
+                    </>
+                )}
 
                 <p className={styles.subtitle}>Public Roster View</p>
                 <p className={styles.creatorCredit}>Made by ぎ𝟏 𝐊𝐨𝐮𝐫𝐞𝐧</p>
