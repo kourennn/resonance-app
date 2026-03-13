@@ -16,8 +16,10 @@ export default function PublicMobileView() {
 
     const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
     const [isOverdue, setIsOverdue] = useState(false);
+    const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
+        setHasMounted(true);
         const saved = localStorage.getItem('resonance_last_shuffle');
         const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59);
         
@@ -108,15 +110,23 @@ export default function PublicMobileView() {
     }, [activeMembers, selectedDivision, searchQuery]);
 
 
-    // Formatting the timestamp
-    const formattedDate = new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-    }).format(lastUpdated);
+    // Formatting the timestamp (Only on client to avoid hydration mismatch)
+    const formattedDate = useMemo(() => {
+        if (!hasMounted || !lastUpdated) return 'Syncing...';
+        try {
+            const dateObj = typeof lastUpdated === 'string' ? new Date(lastUpdated) : lastUpdated;
+            return new Intl.DateTimeFormat('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            }).format(dateObj);
+        } catch (e) {
+            return 'Just now';
+        }
+    }, [hasMounted, lastUpdated]);
 
     return (
         <div className={styles.mobileContainer}>
@@ -172,12 +182,12 @@ export default function PublicMobileView() {
                         displayedMembers.map(member => (
                             <div key={member.id} className={styles.memberItem}>
                                 <div className={styles.memberAvatar}>
-                                    {member.name[0].toUpperCase()}
+                                    {member.name ? member.name[0].toUpperCase() : '?'}
                                 </div>
                                 <div className={styles.memberInfo}>
-                                    <span className={styles.memberName}>{member.name}</span>
-                                    <span className={`${styles.memberRole} ${styles[member.role.replace(' ', '')]}`}>
-                                        {member.role}
+                                    <span className={styles.memberName}>{member.name || 'Unknown'}</span>
+                                    <span className={`${styles.memberRole} ${member.role ? styles[member.role.replace(' ', '')] : ''}`}>
+                                        {member.role || 'Member'}
                                     </span>
                                 </div>
                             </div>
