@@ -127,7 +127,7 @@ export default function Divisions() {
         <div className={styles.container}>
             <header className={styles.header}>
                 <h2 className="text-gradient">Divisions Overview</h2>
-                <p className={styles.subtext}>Manage specialty teams and assign talent.</p>
+                <p className={styles.subtext}>Manage specialty teams and assign members.</p>
                 <form onSubmit={handleAddDivision} className={styles.addDivisionForm}>
                     <input
                         type="text"

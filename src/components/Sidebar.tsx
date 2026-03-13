@@ -18,6 +18,9 @@ const Sidebar = () => {
                 <Link href="/divisions" className={styles.navItem}>
                     <span className={styles.icon}>🎭</span> Divisions
                 </Link>
+                <Link href="/shuffle" className={styles.navItem}>
+                    <span className={styles.icon}>🔀</span> Shuffle
+                </Link>
             </nav>
 
             <div className={styles.footer}>

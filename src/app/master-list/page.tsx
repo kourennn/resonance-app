@@ -14,8 +14,6 @@ type FormData = {
     gender: 'Male' | 'Female' | 'Other';
     division: string;
     status: 'Active' | 'Idle';
-    range: string;
-    specialties: string;
 };
 
 const defaultForm: FormData = {
@@ -24,8 +22,6 @@ const defaultForm: FormData = {
     gender: 'Male',
     division: 'Unassigned',
     status: 'Active',
-    range: '',
-    specialties: '',
 };
 
 export default function MasterList() {
@@ -114,8 +110,6 @@ export default function MasterList() {
             gender: form.gender,
             division: form.division,
             status: form.status,
-            range: form.range,
-            specialties: form.specialties.split(',').map(s => s.trim()).filter(Boolean),
         });
         setForm(defaultForm);
         setShowForm(false);
@@ -125,7 +119,7 @@ export default function MasterList() {
         <div className={styles.container}>
             <header className={styles.header}>
                 <div className={styles.headerTitleRow}>
-                    <h2 className="text-gradient">Master Talent List</h2>
+                    <h2 className="text-gradient">Master Member List</h2>
                     <span className={styles.memberCount}>({filteredMembers.length})</span>
                 </div>
                 <div className={styles.filtersWrapper}>
@@ -187,7 +181,7 @@ export default function MasterList() {
                             )}
                         </div>
                         <button className={styles.addBtn} onClick={() => setShowForm(v => !v)}>
-                            {showForm ? '✕ Cancel' : '＋ Add Talent'}
+                            {showForm ? '✕ Cancel' : '＋ Add Member'}
                         </button>
                     </div>
                 </div>
@@ -195,7 +189,7 @@ export default function MasterList() {
 
             {showForm && (
                 <form onSubmit={handleSubmit} className={`${styles.addForm} glass`}>
-                    <h3 className={styles.formTitle}>Induct New Talent</h3>
+                    <h3 className={styles.formTitle}>Induct New Member</h3>
                     <div className={styles.formGrid}>
                         <div className={styles.field}>
                             <label>Name *</label>
@@ -226,14 +220,6 @@ export default function MasterList() {
                                 {divisions.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
                         </div>
-                        <div className={styles.field}>
-                            <label>Vocal Range</label>
-                            <input name="range" placeholder="e.g. Baritone, Soprano" className="glass" value={form.range} onChange={handleFormChange} />
-                        </div>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Specialties <span className={styles.hint}>(comma-separated)</span></label>
-                        <input name="specialties" placeholder="e.g. Goku, Naruto, Batman" className="glass" value={form.specialties} onChange={handleFormChange} />
                     </div>
                     <div className={styles.formActions}>
                         <button type="submit" className={styles.submitBtn}>✓ Induct Member</button>

@@ -1,11 +1,60 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
 export default function PublicMobileView() {
     const { members, divisions, lastUpdated, isLoading } = useAppContext();
+
+    // Constant dates
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const startYear = 2026;
+    const seasonNumber = (currentYear - startYear) * 12 + currentMonth;
+
+    const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
+    const [isOverdue, setIsOverdue] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('resonance_last_shuffle');
+        const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+        
+        const updateTimer = () => {
+          const currentTime = new Date();
+          const diff = endOfMonth.getTime() - currentTime.getTime();
+
+          if (diff <= 0) {
+            if (saved) {
+                const lastDate = new Date(saved);
+                const shuffledThisMonth = lastDate.getMonth() === now.getMonth() && lastDate.getFullYear() === now.getFullYear();
+                if (!shuffledThisMonth) setIsOverdue(true);
+            } else {
+                setIsOverdue(true);
+            }
+            const overdueDiff = Math.abs(diff);
+            setTimeLeft({
+                d: Math.floor(overdueDiff / (1000 * 60 * 60 * 24)),
+                h: Math.floor((overdueDiff / (1000 * 60 * 60)) % 24),
+                m: Math.floor((overdueDiff / (1000 * 60)) % 60),
+                s: Math.floor((overdueDiff / 1000) % 60)
+            });
+          } else {
+            setIsOverdue(false);
+            setTimeLeft({
+                d: Math.floor(diff / (1000 * 60 * 60 * 24)),
+                h: Math.floor((diff / (1000 * 60 * 60)) % 24),
+                m: Math.floor((diff / (1000 * 60)) % 60),
+                s: Math.floor((diff / 1000) % 60)
+            });
+          }
+        };
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
+    }, [currentMonth, currentYear]);
 
     if (isLoading) {
         return (
@@ -73,6 +122,15 @@ export default function PublicMobileView() {
         <div className={styles.mobileContainer}>
             <header className={styles.mobileHeader}>
                 <h1 className="text-gradient">RESONANCE 余情</h1>
+                <div className={styles.seasonBadge}>SEASON {seasonNumber}</div>
+                
+                <div className={`${styles.publicTimer} ${isOverdue ? styles.overdue : ''}`}>
+                    <span className={styles.timerLabel}>{isOverdue ? 'SHUFFLE OVERDUE' : 'NEXT SHUFFLE IN'}</span>
+                    <span className={styles.timerValue}>
+                        {timeLeft ? `${timeLeft.d}d ${timeLeft.h}h ${timeLeft.m}m` : '--:--:--'}
+                    </span>
+                </div>
+
                 <p className={styles.subtitle}>Public Roster View</p>
                 <p className={styles.creatorCredit}>Made by ぎ𝟏 𝐊𝐨𝐮𝐫𝐞𝐧</p>
             </header>
