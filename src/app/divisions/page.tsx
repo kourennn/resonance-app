@@ -4,6 +4,13 @@ import { useState, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
+const RANK_LABELS: Record<string, string> = {
+    Jack: '♠ Jack',
+    Queen: '♛ Queen',
+    King: '♔ King',
+    Ace: '◆ Ace',
+};
+
 function MemberSearchDropdown({
     divisionName,
     onAssign,
@@ -123,6 +130,11 @@ export default function Divisions() {
         return name;
     };
 
+    const getRankClass = (rank?: string) => {
+        if (!rank || rank === 'Unranked') return styles.rankUnranked;
+        return styles[`rank${rank}`] || styles.rankUnranked;
+    };
+
     return (
         <div className={styles.container}>
             <header className={styles.header}>
@@ -182,7 +194,19 @@ export default function Divisions() {
                                                 <p className={`${styles.memberName} ${member.role === 'Captain' ? styles.captainName : member.role === 'Vice Captain' ? styles.vcName : ''}`}>
                                                     {getDisplayName(member.name, member.role)}
                                                 </p>
+                                                <span className={`${styles.rankBadge} ${getRankClass(member.rank)}`}>
+                                                    {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
+                                                </span>
                                             </div>
+                                            {member.role === 'Member' && (
+                                                <button
+                                                    className={styles.unassignBtn}
+                                                    onClick={() => updateMemberDivision(member.id, 'Unassigned')}
+                                                    title="Unassign from division"
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
                                         </div>
                                     ))
                                 )}

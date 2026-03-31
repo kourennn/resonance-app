@@ -59,20 +59,24 @@
 
 .memberItem {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
 }
 
 .memberMain {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex: 1;
+    min-width: 0;
 }
 
 .indicator {
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .active {
@@ -175,6 +179,7 @@
 .memberName {
     font-weight: 600;
     font-size: 0.95rem;
+    white-space: nowrap;
 }
 
 .captainName {
@@ -185,6 +190,77 @@
 .vcName {
     color: var(--accent-primary);
     opacity: 0.9;
+}
+
+/* Rank Badges */
+.rankBadge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.rankUnranked {
+    color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rankJack {
+    color: #CD7F32;
+    background: rgba(205, 127, 50, 0.12);
+    border: 1px solid rgba(205, 127, 50, 0.35);
+}
+
+.rankQueen {
+    color: #C0C0C0;
+    background: rgba(192, 192, 192, 0.1);
+    border: 1px solid rgba(192, 192, 192, 0.35);
+}
+
+.rankKing {
+    color: #FFD700;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+}
+
+.rankAce {
+    color: #B9F2FF;
+    background: rgba(185, 242, 255, 0.08);
+    border: 1px solid rgba(185, 242, 255, 0.35);
+    text-shadow: 0 0 8px rgba(185, 242, 255, 0.4);
+    box-shadow: 0 0 8px rgba(185, 242, 255, 0.1);
+}
+
+/* Unassign Button */
+.unassignBtn {
+    opacity: 0;
+    background: transparent;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: #f43f5e;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.memberItem:hover .unassignBtn {
+    opacity: 1;
+}
+
+.unassignBtn:hover {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: #f43f5e;
 }
 
 .emptyMsg {

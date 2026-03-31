@@ -5,6 +5,7 @@ export type Member = {
   status: 'Active' | 'Idle';
   role: 'Captain' | 'Vice Captain' | 'Member';
   gender: 'Male' | 'Female' | 'Other';
+  rank?: 'Jack' | 'Queen' | 'King' | 'Ace' | 'Unranked';
   image?: string;
   last_division_1?: string;
   last_division_2?: string;

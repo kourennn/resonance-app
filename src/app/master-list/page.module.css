@@ -508,3 +508,48 @@
         width: 100%;
     }
 }
+
+/* Rank Badges */
+.rankBadge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.rankUnranked {
+    color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rankJack {
+    color: #CD7F32;
+    background: rgba(205, 127, 50, 0.12);
+    border: 1px solid rgba(205, 127, 50, 0.35);
+}
+
+.rankQueen {
+    color: #C0C0C0;
+    background: rgba(192, 192, 192, 0.1);
+    border: 1px solid rgba(192, 192, 192, 0.35);
+}
+
+.rankKing {
+    color: #FFD700;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+}
+
+.rankAce {
+    color: #B9F2FF;
+    background: rgba(185, 242, 255, 0.08);
+    border: 1px solid rgba(185, 242, 255, 0.35);
+    text-shadow: 0 0 8px rgba(185, 242, 255, 0.4);
+    box-shadow: 0 0 8px rgba(185, 242, 255, 0.1);
+}

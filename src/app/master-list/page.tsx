@@ -7,6 +7,15 @@ import styles from './page.module.css';
 const ROLES = ['Captain', 'Vice Captain', 'Member'] as const;
 const GENDERS = ['Male', 'Female', 'Other'] as const;
 const STATUSES = ['Active', 'Idle'] as const;
+const RANKS = ['Unranked', 'Jack', 'Queen', 'King', 'Ace'] as const;
+
+const RANK_LABELS: Record<string, string> = {
+    Jack: '♠ Jack',
+    Queen: '♛ Queen',
+    King: '♔ King',
+    Ace: '◆ Ace',
+    Unranked: 'Unranked',
+};
 
 type FormData = {
     name: string;
@@ -41,11 +50,12 @@ export default function MasterList() {
     const [genderFilter, setGenderFilter] = useState('All');
     const [statusFilter, setStatusFilter] = useState('All');
     const [divisionFilter, setDivisionFilter] = useState('All');
+    const [rankFilter, setRankFilter] = useState('All');
     const [showFilters, setShowFilters] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState<FormData>(defaultForm);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [editForm, setEditForm] = useState<Partial<FormData>>({});
+    const [editForm, setEditForm] = useState<Partial<FormData & { rank: string }>>({});
 
     const filteredMembers = members.filter(m => {
         const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase());
@@ -53,14 +63,17 @@ export default function MasterList() {
         const matchesGender = genderFilter === 'All' || m.gender === genderFilter;
         const matchesStatus = statusFilter === 'All' || m.status === statusFilter;
         const matchesDivision = divisionFilter === 'All' || m.division === divisionFilter;
-        return matchesSearch && matchesRole && matchesGender && matchesStatus && matchesDivision;
+        const memberRank = m.rank || 'Unranked';
+        const matchesRank = rankFilter === 'All' || memberRank === rankFilter;
+        return matchesSearch && matchesRole && matchesGender && matchesStatus && matchesDivision && matchesRank;
     });
 
     const activeFilterCount = [
         roleFilter !== 'All',
         genderFilter !== 'All',
         statusFilter !== 'All',
-        divisionFilter !== 'All'
+        divisionFilter !== 'All',
+        rankFilter !== 'All',
     ].filter(Boolean).length;
 
     const resetFilters = () => {
@@ -68,6 +81,7 @@ export default function MasterList() {
         setGenderFilter('All');
         setStatusFilter('All');
         setDivisionFilter('All');
+        setRankFilter('All');
         setSearch('');
     };
 
@@ -85,6 +99,7 @@ export default function MasterList() {
             name: member.name,
             role: member.role,
             gender: member.gender,
+            rank: member.rank || 'Unranked',
         });
     };
 
@@ -93,6 +108,7 @@ export default function MasterList() {
             name: editForm.name,
             role: editForm.role as any,
             gender: editForm.gender as any,
+            rank: (editForm.rank as any) || 'Unranked',
         });
         setEditingId(null);
     };
@@ -113,6 +129,11 @@ export default function MasterList() {
         });
         setForm(defaultForm);
         setShowForm(false);
+    };
+
+    const getRankClass = (rank?: string) => {
+        if (!rank || rank === 'Unranked') return styles.rankUnranked;
+        return styles[`rank${rank}`] || styles.rankUnranked;
     };
 
     return (
@@ -171,6 +192,13 @@ export default function MasterList() {
                                             <option value="All">All Divisions</option>
                                             <option value="Unassigned">Unassigned</option>
                                             {divisions.map(d => <option key={d} value={d}>{d}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className={styles.filterSection}>
+                                        <label>Rank</label>
+                                        <select className={styles.filterSelect} value={rankFilter} onChange={(e) => setRankFilter(e.target.value)}>
+                                            <option value="All">All Ranks</option>
+                                            {RANKS.map(r => <option key={r} value={r}>{RANK_LABELS[r]}</option>)}
                                         </select>
                                     </div>
                                     <div className={styles.filterActions}>
@@ -234,6 +262,7 @@ export default function MasterList() {
                             <th>Name</th>
                             <th>Role</th>
                             <th>Gender</th>
+                            <th>Rank</th>
                             <th>Division</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -285,6 +314,22 @@ export default function MasterList() {
                                         </select>
                                     ) : (
                                         member.gender
+                                    )}
+                                </td>
+                                <td>
+                                    {editingId === member.id ? (
+                                        <select
+                                            name="rank"
+                                            value={editForm.rank || 'Unranked'}
+                                            onChange={handleEditChange}
+                                            className={styles.inlineSelect}
+                                        >
+                                            {RANKS.map(r => <option key={r} value={r}>{RANK_LABELS[r]}</option>)}
+                                        </select>
+                                    ) : (
+                                        <span className={`${styles.rankBadge} ${getRankClass(member.rank)}`}>
+                                            {RANK_LABELS[member.rank || 'Unranked']}
+                                        </span>
                                     )}
                                 </td>
                                 <td><span className={styles.divisionTag}>{member.division}</span></td>

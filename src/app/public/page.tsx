@@ -4,6 +4,13 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
+const RANK_LABELS: Record<string, string> = {
+    Jack: '♠ Jack',
+    Queen: '♛ Queen',
+    King: '♔ King',
+    Ace: '◆ Ace',
+};
+
 export default function PublicMobileView() {
     const { members, divisions, lastUpdated, isLoading } = useAppContext();
 
@@ -211,7 +218,12 @@ export default function PublicMobileView() {
                                     {member.name ? member.name[0].toUpperCase() : '?'}
                                 </div>
                                 <div className={styles.memberInfo}>
-                                    <span className={styles.memberName}>{member.name || 'Unknown'}</span>
+                                    <div className={styles.memberNameRow}>
+                                        <span className={styles.memberName}>{member.name || 'Unknown'}</span>
+                                        <span className={`${styles.rankBadge} ${(!member.rank || member.rank === 'Unranked') ? styles.rankUnranked : styles[`rank${member.rank}`]}`}>
+                                            {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
+                                        </span>
+                                    </div>
                                     <span className={`${styles.memberRole} ${member.role ? styles[member.role.replace(' ', '')] : ''}`}>
                                         {member.role || 'Member'}
                                     </span>
