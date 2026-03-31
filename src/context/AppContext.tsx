@@ -39,7 +39,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 .from('divisions')
                 .select('name')
                 .order('name');
-            if (divData) setDivisions(divData.map(d => d.name));
+            if (divData) {
+                const uniqueDivs = Array.from(new Set(divData.map(d => d.name)));
+                setDivisions(uniqueDivs);
+            }
 
             // Fetch Members
             const { data: memData } = await supabase
@@ -72,7 +75,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             .channel('divisions_changes')
             .on('postgres_changes', { event: '*', table: 'divisions', schema: 'public' }, (payload) => {
                 if (payload.eventType === 'INSERT') {
-                    setDivisions(prev => [...prev, payload.new.name].sort());
+                    setDivisions(prev => {
+                        const newSet = new Set([...prev, payload.new.name]);
+                        return Array.from(newSet).sort();
+                    });
                 } else if (payload.eventType === 'UPDATE') {
                     setDivisions(prev => prev.map(d => d === payload.old.name ? payload.new.name : d).sort());
                 } else if (payload.eventType === 'DELETE') {
@@ -112,7 +118,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const addDivision = async (divisionName: string) => {
         if (!divisions.includes(divisionName)) {
-            setDivisions(prev => [...prev, divisionName].sort());
+            setDivisions(prev => {
+                const newSet = new Set([...prev, divisionName]);
+                return Array.from(newSet).sort();
+            });
             await supabase.from('divisions').insert([{ name: divisionName }]);
         }
     };
