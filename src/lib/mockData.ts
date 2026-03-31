@@ -60,14 +60,14 @@ export const members: Member[] = [
   { id: '36', name: 'tavasco', division: 'Charyeok', status: 'Active', role: 'Member', gender: 'Male' },
   { id: '37', name: 'jays', division: 'Charyeok', status: 'Active', role: 'Member', gender: 'Male' },
 
-  // Okinawa
-  { id: '38', name: 'Cao', division: 'Okinawa', status: 'Active', role: 'Captain', gender: 'Male' },
-  { id: '39', name: 'reese', division: 'Okinawa', status: 'Active', role: 'Vice Captain', gender: 'Female' },
-  { id: '40', name: 'chizu', division: 'Okinawa', status: 'Active', role: 'Member', gender: 'Female' },
-  { id: '41', name: 'yoru', division: 'Okinawa', status: 'Active', role: 'Member', gender: 'Male' },
-  { id: '42', name: 'ayu', division: 'Okinawa', status: 'Active', role: 'Member', gender: 'Female' },
-  { id: '43', name: 'shizen', division: 'Okinawa', status: 'Active', role: 'Member', gender: 'Male' },
-  { id: '44', name: 'hikari', division: 'Okinawa', status: 'Active', role: 'Member', gender: 'Female' },
+  // Equinox
+  { id: '38', name: 'Cao', division: 'Equinox', status: 'Active', role: 'Captain', gender: 'Male' },
+  { id: '39', name: 'reese', division: 'Equinox', status: 'Active', role: 'Vice Captain', gender: 'Female' },
+  { id: '40', name: 'chizu', division: 'Equinox', status: 'Active', role: 'Member', gender: 'Female' },
+  { id: '41', name: 'yoru', division: 'Equinox', status: 'Active', role: 'Member', gender: 'Male' },
+  { id: '42', name: 'ayu', division: 'Equinox', status: 'Active', role: 'Member', gender: 'Female' },
+  { id: '43', name: 'shizen', division: 'Equinox', status: 'Active', role: 'Member', gender: 'Male' },
+  { id: '44', name: 'hikari', division: 'Equinox', status: 'Active', role: 'Member', gender: 'Female' },
 
   // 7th Heaven
   { id: '45', name: 'Muryozaki', division: '7th Heaven', status: 'Active', role: 'Captain', gender: 'Male' },
@@ -93,7 +93,7 @@ export const initialDivisions = [
   'Phantom Troupes',
   'Ryūjin',
   'Charyeok',
-  'Okinawa',
+  'Equinox',
   '7th Heaven',
   "Yaoguai's"
 ];

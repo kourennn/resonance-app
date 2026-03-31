@@ -112,12 +112,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const addDivision = async (divisionName: string) => {
         if (!divisions.includes(divisionName)) {
+            setDivisions(prev => [...prev, divisionName].sort());
             await supabase.from('divisions').insert([{ name: divisionName }]);
         }
     };
 
     const deleteDivision = async (divisionName: string) => {
         if (confirm(`Are you sure you want to delete the division "${divisionName}"?`)) {
+            setDivisions(prev => prev.filter(d => d !== divisionName));
+            setMembers(prev => prev.map(m => m.division === divisionName ? { ...m, division: 'Unassigned' } : m));
             // First, update members in this division to Unassigned
             await supabase.from('members').update({ division: 'Unassigned' }).eq('division', divisionName);
             // Then delete the division
@@ -127,6 +130,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const updateDivisionName = async (oldName: string, newName: string) => {
         if (!divisions.includes(newName)) {
+            setDivisions(prev => prev.map(d => d === oldName ? newName : d).sort());
+            setMembers(prev => prev.map(m => m.division === oldName ? { ...m, division: newName } : m));
             // First, update members
             await supabase.from('members').update({ division: newName }).eq('division', oldName);
             // Then update division name

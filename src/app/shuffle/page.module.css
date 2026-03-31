@@ -104,7 +104,7 @@
     flex-direction: column;
 }
 
-.isOkinawa {
+.isEquinox {
     border: 2px solid var(--accent-secondary) !important;
     background: rgba(236, 72, 153, 0.05) !important;
 }
@@ -122,7 +122,7 @@
     font-weight: 600;
 }
 
-.okinawaBadge {
+.equinoxBadge {
     background: var(--accent-secondary);
     color: white;
     font-size: 0.7rem;

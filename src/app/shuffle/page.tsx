@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
@@ -21,22 +21,38 @@ export default function ShufflePage() {
     const [password, setPassword] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
+    const prevDivisionsRef = useRef<string[]>([]);
+
     // Initial simulation on load or when members change
     useEffect(() => {
-        if (!isLoading && members.length > 0 && assignments.length === 0) {
-            handleReroll();
+        if (!isLoading && members.length > 0) {
+            const divsChanged = prevDivisionsRef.current.length !== divisions.length || 
+                                prevDivisionsRef.current.some(d => !divisions.includes(d));
+            
+            if (assignments.length === 0 || divsChanged) {
+                handleReroll();
+                prevDivisionsRef.current = divisions;
+            } else {
+                setAssignments(prev => prev.map(a => {
+                    const latest = members.find(m => m.id === a.memberId);
+                    if (latest) {
+                        return { ...a, name: latest.name, gender: latest.gender, role: latest.role };
+                    }
+                    return a;
+                }));
+            }
         }
         
         // Load last shuffle from localStorage
         const saved = localStorage.getItem('resonance_last_shuffle');
         if (saved) setLastShuffleDate(saved);
-    }, [isLoading, members.length]);
+    }, [isLoading, members, divisions]);
 
     const activeMembers = useMemo(() => members.filter(m => m.status === 'Active'), [members]);
     
     // Logic members: 
     // 1. Captains and VCs (Stay put)
-    // 2. Males (Shuffled across divisions EXCEPT Okinawa)
+    // 2. Males (Shuffled across divisions EXCEPT Equinox)
     // 3. Females (Manually assigned, but initially unassigned in simulation)
     
     const handleReroll = () => {
@@ -57,7 +73,7 @@ export default function ShufflePage() {
 
         // 2. Shuffle Active Males with Balanced Distribution & History Avoidance
         const activeMales = activeMembers.filter(m => m.role === 'Member' && m.gender === 'Male');
-        const targetDivisions = divisions.filter(d => d !== 'Okinawa');
+        const targetDivisions = divisions.filter(d => d !== 'Equinox');
         
         if (targetDivisions.length > 0) {
             // Shuffle males list for randomness
@@ -176,7 +192,7 @@ export default function ShufflePage() {
             <header className={styles.header}>
                 <div className={styles.titleSection}>
                     <h2 className="text-gradient">Shuffle Center</h2>
-                    <p className={styles.subtext}>Balanced distribution & Okinawa specialized routine.</p>
+                    <p className={styles.subtext}>Balanced distribution & Equinox specialized routine.</p>
                 </div>
                 {lastShuffleDate && (
                     <div className={styles.lastShuffle}>
@@ -200,13 +216,13 @@ export default function ShufflePage() {
                 <div className={styles.divisionsGrid}>
                     {divisions.map(division => {
                         const divMembers = assignments.filter(a => a.division === division);
-                        const isOkinawa = division === 'Okinawa';
+                        const isEquinox = division === 'Equinox';
 
                         return (
-                            <div key={division} className={`${styles.divisionCard} glass ${isOkinawa ? styles.isOkinawa : ''}`}>
+                            <div key={division} className={`${styles.divisionCard} glass ${isEquinox ? styles.isEquinox : ''}`}>
                                 <div className={styles.cardHeader}>
                                     <h3>{division}</h3>
-                                    {isOkinawa && <span className={styles.okinawaBadge}>Girls Only</span>}
+                                    {isEquinox && <span className={styles.equinoxBadge}>Girls Only</span>}
                                     <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>{divMembers.length}</span>
                                 </div>
                                 <div className={styles.memberList}>
@@ -241,7 +257,7 @@ export default function ShufflePage() {
                     <div className={`${styles.unassignedPanel} glass`}>
                         <div className={styles.panelTitle}>🎀 Pending Female Assignment</div>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            Assign active females to Okinawa or other divisions below.
+                            Assign active females to Equinox or other divisions below.
                         </p>
                         <div className={styles.unassignedList}>
                             {unassignedFemales.length === 0 ? (
