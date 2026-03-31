@@ -117,9 +117,9 @@ export default function ShufflePage() {
             });
         }
 
-        // 3. Keep Females as Unassigned
-        const activeFemales = activeMembers.filter(m => m.role === 'Member' && m.gender === 'Female');
-        activeFemales.forEach(m => {
+        // 3. Keep Females and 'Other' genders as Unassigned
+        const activeNonMales = activeMembers.filter(m => m.role === 'Member' && m.gender !== 'Male');
+        activeNonMales.forEach(m => {
             newAssignments.push({
                 memberId: m.id,
                 division: 'Unassigned',
@@ -194,8 +194,7 @@ export default function ShufflePage() {
         );
     }
 
-    const unassignedFemales = assignments.filter(a => a.division === 'Unassigned');
-
+    const unassignedMembers = assignments.filter(a => a.division === 'Unassigned');
     return (
         <div className={styles.container}>
             <header className={styles.header}>
@@ -264,18 +263,25 @@ export default function ShufflePage() {
 
                 <div className={styles.sidebar}>
                     <div className={`${styles.unassignedPanel} glass`}>
-                        <div className={styles.panelTitle}>🎀 Pending Female Assignment</div>
+                        <div className={styles.panelTitle}>📌 Pending Assignments</div>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            Assign active females to Equinox or other divisions below.
+                            Assign unassigned members, females, and leadership to divisions below.
                         </p>
                         <div className={styles.unassignedList}>
-                            {unassignedFemales.length === 0 ? (
-                                <p className={styles.emptyMsg}>All females assigned.</p>
+                            {unassignedMembers.length === 0 ? (
+                                <p className={styles.emptyMsg}>All members assigned.</p>
                             ) : (
-                                unassignedFemales.map(m => (
+                                unassignedMembers.map(m => (
                                     <div key={m.memberId} className={styles.unassignedMember}>
                                         <div className={styles.memberMeta}>
-                                            <span className={styles.genderFemale}>♀ {m.name}</span>
+                                            <span className={m.gender === 'Male' ? styles.genderMale : styles.genderFemale}>
+                                                {m.gender === 'Male' ? '♂' : '♀'} {m.name}
+                                                {m.role !== 'Member' && (
+                                                    <strong style={{ marginLeft: '6px', fontSize: '0.65rem', color: 'var(--accent-primary)' }}>
+                                                        {m.role === 'Captain' ? 'CAPT' : 'VC'}
+                                                    </strong>
+                                                )}
+                                            </span>
                                         </div>
                                         <select 
                                             className={styles.assignSelect}
