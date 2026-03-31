@@ -22,16 +22,26 @@ export default function ShufflePage() {
     const [isSaving, setIsSaving] = useState(false);
 
     const prevDivisionsRef = useRef<string[]>([]);
+    const prevMembersHashRef = useRef<string>('');
+    const activeMembers = useMemo(() => members.filter(m => m.status === 'Active'), [members]);
+    
+    // Hash structural factors (gender, role, status) that break the simulation rules if modified mid-shuffle.
+    const structuralHash = useMemo(() => 
+        activeMembers.map(m => `${m.id}-${m.gender}-${m.role}`).sort().join('|'), 
+        [activeMembers]
+    );
 
     // Initial simulation on load or when members change
     useEffect(() => {
         if (!isLoading && members.length > 0) {
             const divsChanged = prevDivisionsRef.current.length !== divisions.length || 
                                 prevDivisionsRef.current.some(d => !divisions.includes(d));
+            const structureChanged = prevMembersHashRef.current !== '' && prevMembersHashRef.current !== structuralHash;
             
-            if (assignments.length === 0 || divsChanged) {
+            if (assignments.length === 0 || divsChanged || structureChanged) {
                 handleReroll();
                 prevDivisionsRef.current = divisions;
+                prevMembersHashRef.current = structuralHash;
             } else {
                 setAssignments(prev => prev.map(a => {
                     const latest = members.find(m => m.id === a.memberId);
@@ -40,16 +50,15 @@ export default function ShufflePage() {
                     }
                     return a;
                 }));
+                prevMembersHashRef.current = structuralHash;
             }
         }
         
         // Load last shuffle from localStorage
         const saved = localStorage.getItem('resonance_last_shuffle');
         if (saved) setLastShuffleDate(saved);
-    }, [isLoading, members, divisions]);
+    }, [isLoading, members, divisions, structuralHash]);
 
-    const activeMembers = useMemo(() => members.filter(m => m.status === 'Active'), [members]);
-    
     // Logic members: 
     // 1. Captains and VCs (Stay put)
     // 2. Males (Shuffled across divisions EXCEPT Equinox)
