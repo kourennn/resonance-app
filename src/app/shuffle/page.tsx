@@ -173,11 +173,13 @@ export default function ShufflePage() {
                 const isAutoShuffled = originalMember.role === 'Member' && originalMember.gender === 'Male';
                 
                 const updateData: any = { division: a.division };
-                
+
+                /* Temporarily disabled until columns are added to Supabase
                 if (isAutoShuffled) {
                     updateData.last_division_1 = originalMember.division;
                     updateData.last_division_2 = originalMember.last_division_1;
                 }
+                */
 
                 await updateMember(a.memberId, updateData);
             }

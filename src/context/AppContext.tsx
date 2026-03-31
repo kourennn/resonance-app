@@ -108,7 +108,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updateMember = async (memberId: string, updates: Partial<Member>) => {
-        await supabase.from('members').update(updates).eq('id', memberId);
+        const { error } = await supabase.from('members').update(updates).eq('id', memberId);
+        if (error) {
+            console.error("updateMember failed:", error);
+            throw new Error(error.message);
+        }
     };
 
     const deleteMember = async (memberId: string) => {
