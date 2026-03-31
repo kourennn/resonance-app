@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
@@ -62,6 +62,21 @@ export default function PublicMobileView() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDivision, setSelectedDivision] = useState<string>('Unassigned');
+    const prevDivisionsRef = useRef<string[]>([]);
+
+    // Sync selectedDivision if it gets renamed or deleted
+    useEffect(() => {
+        if (!isLoading && divisions.length > 0) {
+            // If the selected division is no longer in the list, try to find if it was renamed 
+            // or just reset to Unassigned
+            if (selectedDivision !== 'Unassigned' && !divisions.includes(selectedDivision)) {
+                // If there's only one division difference, we might be able to guess the rename, 
+                // but safer to just revert to Unassigned or the first available if it's a deletion.
+                setSelectedDivision('Unassigned');
+            }
+            prevDivisionsRef.current = divisions;
+        }
+    }, [divisions, isLoading, selectedDivision]);
 
     // Filter only Active members
     const activeMembers = useMemo(() => members.filter(m => m.status === 'Active'), [members]);
@@ -184,7 +199,10 @@ export default function PublicMobileView() {
             </div>
 
             <div className={`${styles.divisionBox} glass animate-fade`}>
-                <h2 className={styles.boxTitle}>{selectedDivision}</h2>
+                <div className={styles.boxHeader}>
+                    <h2 className={styles.boxTitle}>{selectedDivision}</h2>
+                    {selectedDivision === 'Equinox' && <span className={styles.equinoxBadge}>Girls Only</span>}
+                </div>
                 <div className={styles.memberList}>
                     {displayedMembers.length > 0 ? (
                         displayedMembers.map(member => (
