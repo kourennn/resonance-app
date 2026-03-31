@@ -313,6 +313,22 @@
     box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
 }
 
+.resetRosterBtn {
+    background: transparent;
+    color: #f43f5e;
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.resetRosterBtn:hover {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: #f43f5e;
+}
+
 .tableWrapper {
     overflow-x: auto;
     padding: 10px;

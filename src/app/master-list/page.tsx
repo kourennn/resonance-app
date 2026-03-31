@@ -34,7 +34,7 @@ const defaultForm: FormData = {
 };
 
 export default function MasterList() {
-    const { members, divisions, addMember, updateMemberStatus, updateMember, deleteMember, isLoading } = useAppContext();
+    const { members, divisions, addMember, updateMemberStatus, updateMember, deleteMember, resetAllMembers, isLoading } = useAppContext();
 
     if (isLoading) {
         return (
@@ -208,6 +208,9 @@ export default function MasterList() {
                                 </div>
                             )}
                         </div>
+                        <button className={styles.resetRosterBtn} onClick={resetAllMembers}>
+                            ⚠️ Reset Roster
+                        </button>
                         <button className={styles.addBtn} onClick={() => setShowForm(v => !v)}>
                             {showForm ? '✕ Cancel' : '＋ Add Member'}
                         </button>

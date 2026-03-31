@@ -67,8 +67,21 @@ export default function ShufflePage() {
     const handleReroll = () => {
         const newAssignments: SimulatedAssignment[] = [];
         
-        // 1. Keep Captains and VCs
-        const fixed = activeMembers.filter(m => m.role !== 'Member');
+        // 0. Keep members who are already assigned to a valid division
+        const assignedMembers = activeMembers.filter(m => m.division !== 'Unassigned' && divisions.includes(m.division));
+        assignedMembers.forEach(m => {
+            newAssignments.push({
+                memberId: m.id,
+                division: m.division,
+                name: m.name,
+                gender: m.gender,
+                role: m.role,
+                history: [m.last_division_1 || '', m.last_division_2 || '']
+            });
+        });
+
+        // 1. Keep Captains and VCs who are currently Unassigned
+        const fixed = activeMembers.filter(m => m.role !== 'Member' && m.division === 'Unassigned');
         fixed.forEach(m => {
             newAssignments.push({
                 memberId: m.id,
@@ -80,17 +93,19 @@ export default function ShufflePage() {
             });
         });
 
-        // 2. Shuffle Active Males with Balanced Distribution & History Avoidance
-        const activeMales = activeMembers.filter(m => m.role === 'Member' && m.gender === 'Male');
+        // 2. Shuffle Unassigned Active Males with Balanced Distribution & History Avoidance
+        const activeMales = activeMembers.filter(m => m.role === 'Member' && m.gender === 'Male' && m.division === 'Unassigned');
         const targetDivisions = divisions.filter(d => d !== 'Equinox');
         
         if (targetDivisions.length > 0) {
             // Shuffle males list for randomness
             const shuffledMales = [...activeMales].sort(() => Math.random() - 0.5);
             
-            // Track counts to keep balance
+            // Track counts to keep balance (take into account already assigned members!)
             const divCounts: Record<string, number> = {};
-            targetDivisions.forEach(d => divCounts[d] = 0);
+            targetDivisions.forEach(d => {
+                divCounts[d] = assignedMembers.filter(m => m.division === d).length;
+            });
 
             shuffledMales.forEach(m => {
                 // Find valid divisions (not in last 2 shuffles)
@@ -117,8 +132,8 @@ export default function ShufflePage() {
             });
         }
 
-        // 3. Keep Females and 'Other' genders as Unassigned
-        const activeNonMales = activeMembers.filter(m => m.role === 'Member' && m.gender !== 'Male');
+        // 3. Keep Unassigned Females and 'Other' genders as Unassigned
+        const activeNonMales = activeMembers.filter(m => m.role === 'Member' && m.gender !== 'Male' && m.division === 'Unassigned');
         activeNonMales.forEach(m => {
             newAssignments.push({
                 memberId: m.id,
@@ -147,28 +162,25 @@ export default function ShufflePage() {
 
         setIsSaving(true);
         try {
-            const updates = assignments
-                .filter(a => a.division !== 'Unassigned')
-                .map(a => {
-                    const originalMember = members.find(m => m.id === a.memberId);
-                    if (!originalMember || originalMember.division === a.division) return null;
+            // Execute sequentially to avoid overloading the DB connections
+            for (const a of assignments) {
+                const originalMember = members.find(m => m.id === a.memberId);
+                // Only update if the division ACTUALLY changed to avoid redundant writes
+                if (!originalMember || originalMember.division === a.division) continue;
 
-                    // Update History ONLY for those affected by the Great Shuffle (Male Members)
-                    // Females and Leadership are unaffected by the cooldown logic.
-                    const isAutoShuffled = originalMember.role === 'Member' && originalMember.gender === 'Male';
-                    
-                    const updateData: any = { division: a.division };
-                    
-                    if (isAutoShuffled) {
-                        updateData.last_division_1 = originalMember.division;
-                        updateData.last_division_2 = originalMember.last_division_1;
-                    }
+                // Update History ONLY for those affected by the Great Shuffle (Male Members)
+                // Females and Leadership are unaffected by the cooldown logic.
+                const isAutoShuffled = originalMember.role === 'Member' && originalMember.gender === 'Male';
+                
+                const updateData: any = { division: a.division };
+                
+                if (isAutoShuffled) {
+                    updateData.last_division_1 = originalMember.division;
+                    updateData.last_division_2 = originalMember.last_division_1;
+                }
 
-                    return updateMember(a.memberId, updateData);
-                })
-                .filter(Boolean);
-            
-            await Promise.all(updates);
+                await updateMember(a.memberId, updateData);
+            }
             
             const now = new Date().toLocaleString();
             setLastShuffleDate(now);

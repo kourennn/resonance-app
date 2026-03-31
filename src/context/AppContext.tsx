@@ -17,6 +17,7 @@ type AppContextType = {
     addDivision: (divisionName: string) => void;
     deleteDivision: (divisionName: string) => void;
     updateDivisionName: (oldName: string, newName: string) => void;
+    resetAllMembers: () => Promise<void>;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -139,12 +140,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const updateDivisionName = async (oldName: string, newName: string) => {
         if (!divisions.includes(newName)) {
-            setDivisions(prev => prev.map(d => d === oldName ? newName : d).sort());
+            setDivisions(prev => {
+                const newSet = new Set(prev.map(d => d === oldName ? newName : d));
+                return Array.from(newSet).sort();
+            });
             setMembers(prev => prev.map(m => m.division === oldName ? { ...m, division: newName } : m));
             // First, update members
             await supabase.from('members').update({ division: newName }).eq('division', oldName);
             // Then update division name
             await supabase.from('divisions').update({ name: newName }).eq('name', oldName);
+        }
+    };
+
+    const resetAllMembers = async () => {
+        if (confirm("Are you sure you want to reset the roster? This unassigns all regular members and resets EVERYONE'S rank to Unranked.")) {
+            // Optimistic UI updates
+            setMembers(prev => prev.map(m => {
+                // Everyone loses rank
+                const updated = { ...m, rank: 'Unranked' as const };
+                // Only members lose division
+                if (m.role === 'Member') updated.division = 'Unassigned';
+                return updated;
+            }));
+
+            // Supabase updates
+            // 1. Reset all ranks
+            // .neq('id', '0') is a hack to get Supabase to allow updating all rows
+            await supabase.from('members').update({ rank: 'Unranked' }).neq('id', '0');
+            // 2. Unassign regular members
+            await supabase.from('members').update({ division: 'Unassigned' }).eq('role', 'Member');
         }
     };
 
@@ -161,7 +185,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             deleteMember,
             addDivision,
             deleteDivision,
-            updateDivisionName
+            updateDivisionName,
+            resetAllMembers
         }}>
             {children}
         </AppContext.Provider>
