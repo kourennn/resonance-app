@@ -5,6 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
 const RANK_LABELS: Record<string, string> = {
+    Joker: '🃏 Joker',
     Jack: '♠ Jack',
     Queen: '♛ Queen',
     King: '♔ King',
@@ -68,18 +69,17 @@ export default function PublicMobileView() {
     }, []);
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedDivision, setSelectedDivision] = useState<string>('Unassigned');
+    const [selectedDivision, setSelectedDivision] = useState<string>('All Divisions');
     const prevDivisionsRef = useRef<string[]>([]);
 
     // Sync selectedDivision if it gets renamed or deleted
     useEffect(() => {
         if (!isLoading && divisions.length > 0) {
             // If the selected division is no longer in the list, try to find if it was renamed 
-            // or just reset to Unassigned
-            if (selectedDivision !== 'Unassigned' && !divisions.includes(selectedDivision)) {
-                // If there's only one division difference, we might be able to guess the rename, 
-                // but safer to just revert to Unassigned or the first available if it's a deletion.
-                setSelectedDivision('Unassigned');
+            // or just reset to All Divisions
+            if (selectedDivision !== 'All Divisions' && selectedDivision !== 'Unassigned' && !divisions.includes(selectedDivision)) {
+                // safer to just revert to All Divisions
+                setSelectedDivision('All Divisions');
             }
             prevDivisionsRef.current = divisions;
         }
@@ -93,22 +93,19 @@ export default function PublicMobileView() {
         const query = e.target.value;
         setSearchQuery(query);
 
-        if (query.trim().length > 1) {
-            // Find the first matching active member
-            const foundMember = activeMembers.find(m => 
-                m.name.toLowerCase().includes(query.toLowerCase())
-            );
-
-            // If found, automatically switch the dropdown to their division
-            if (foundMember) {
-                setSelectedDivision(foundMember.division);
-            }
+        if (query.trim().length > 0) {
+            // When searching, switch to All Divisions to view matches across the entire roster
+            setSelectedDivision('All Divisions');
         }
     };
 
     // Filter members for the currently selected division
     const displayedMembers = useMemo(() => {
-        let divisionMembers = activeMembers.filter(m => m.division === selectedDivision);
+        let divisionMembers = activeMembers;
+        
+        if (selectedDivision !== 'All Divisions') {
+            divisionMembers = divisionMembers.filter(m => m.division === selectedDivision);
+        }
 
         // If a search query exists, further filter the box to highlight the person
         if (searchQuery.trim() !== '') {
@@ -198,6 +195,7 @@ export default function PublicMobileView() {
                         setSearchQuery(''); // Clear search when manually switching
                     }}
                 >
+                    <option value="All Divisions">All Divisions</option>
                     <option value="Unassigned">Unassigned</option>
                     {divisions.map(d => (
                         <option key={d} value={d}>{d}</option>
@@ -207,7 +205,7 @@ export default function PublicMobileView() {
 
             <div className={`${styles.divisionBox} glass animate-fade`}>
                 <div className={styles.boxHeader}>
-                    <h2 className={styles.boxTitle}>{selectedDivision}</h2>
+                    <h2 className={styles.boxTitle}>{selectedDivision === 'All Divisions' ? 'All Members' : selectedDivision}</h2>
                     {selectedDivision === 'Equinox' && <span className={styles.equinoxBadge}>Girls Only</span>}
                 </div>
                 <div className={styles.memberList}>

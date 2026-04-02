@@ -5,6 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
 const RANK_LABELS: Record<string, string> = {
+    Joker: '🃏 Joker',
     Jack: '♠ Jack',
     Queen: '♛ Queen',
     King: '♔ King',

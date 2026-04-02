@@ -7,9 +7,10 @@ import styles from './page.module.css';
 const ROLES = ['Captain', 'Vice Captain', 'Member'] as const;
 const GENDERS = ['Male', 'Female', 'Other'] as const;
 const STATUSES = ['Active', 'Idle'] as const;
-const RANKS = ['Unranked', 'Jack', 'Queen', 'King', 'Ace'] as const;
+const RANKS = ['Unranked', 'Joker', 'Jack', 'Queen', 'King', 'Ace'] as const;
 
 const RANK_LABELS: Record<string, string> = {
+    Joker: '🃏 Joker',
     Jack: '♠ Jack',
     Queen: '♛ Queen',
     King: '♔ King',
