@@ -222,9 +222,14 @@ export default function PublicMobileView() {
                                             {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
                                         </span>
                                     </div>
-                                    <span className={`${styles.memberRole} ${member.role ? styles[member.role.replace(' ', '')] : ''}`}>
-                                        {member.role || 'Member'}
-                                    </span>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <span className={`${styles.memberRole} ${member.role ? styles[member.role.replace(' ', '')] : ''}`}>
+                                            {member.role || 'Member'}
+                                        </span>
+                                        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', padding: '2px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px' }}>
+                                            {member.division}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         ))
