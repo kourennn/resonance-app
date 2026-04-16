@@ -5,7 +5,13 @@ export type Member = {
   status: 'Active' | 'Idle';
   role: 'Captain' | 'Vice Captain' | 'Member';
   gender: 'Male' | 'Female' | 'Other';
-  rank?: 'Jack' | 'Queen' | 'King' | 'Ace' | 'Unranked';
+  rank?: 
+    | 'Joker (low-tier)' | 'Joker (mid-tier)' | 'Joker (high-tier)'
+    | 'Jack (low-tier)' | 'Jack (mid-tier)' | 'Jack (high-tier)'
+    | 'Queen (low-tier)' | 'Queen (mid-tier)' | 'Queen (high-tier)'
+    | 'King (low-tier)' | 'King (mid-tier)' | 'King (high-tier)'
+    | 'Ace (low-tier)' | 'Ace (mid-tier)' | 'Ace (high-tier)'
+    | 'Joker' | 'Jack' | 'Queen' | 'King' | 'Ace' | 'Unranked';
   image?: string;
   last_division_1?: string;
   last_division_2?: string;

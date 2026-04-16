@@ -5,6 +5,21 @@ import { useAppContext } from '@/context/AppContext';
 import styles from './page.module.css';
 
 const RANK_LABELS: Record<string, string> = {
+    'Joker (low-tier)': '🃏 Joker (low-tier)',
+    'Joker (mid-tier)': '🃏 Joker (mid-tier)',
+    'Joker (high-tier)': '🃏 Joker (high-tier)',
+    'Jack (low-tier)': '♠ Jack (low-tier)',
+    'Jack (mid-tier)': '♠ Jack (mid-tier)',
+    'Jack (high-tier)': '♠ Jack (high-tier)',
+    'Queen (low-tier)': '♛ Queen (low-tier)',
+    'Queen (mid-tier)': '♛ Queen (mid-tier)',
+    'Queen (high-tier)': '♛ Queen (high-tier)',
+    'King (low-tier)': '♔ King (low-tier)',
+    'King (mid-tier)': '♔ King (mid-tier)',
+    'King (high-tier)': '♔ King (high-tier)',
+    'Ace (low-tier)': '◆ Ace (low-tier)',
+    'Ace (mid-tier)': '◆ Ace (mid-tier)',
+    'Ace (high-tier)': '◆ Ace (high-tier)',
     Joker: '🃏 Joker',
     Jack: '♠ Jack',
     Queen: '♛ Queen',
@@ -218,7 +233,7 @@ export default function PublicMobileView() {
                                 <div className={styles.memberInfo}>
                                     <div className={styles.memberNameRow}>
                                         <span className={styles.memberName}>{member.name || 'Unknown'}</span>
-                                        <span className={`${styles.rankBadge} ${(!member.rank || member.rank === 'Unranked') ? styles.rankUnranked : styles[`rank${member.rank}`]}`}>
+                                        <span className={`${styles.rankBadge} ${(!member.rank || member.rank === 'Unranked') ? styles.rankUnranked : styles[`rank${member.rank.split(' ')[0]}`]}`}>
                                             {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
                                         </span>
                                     </div>

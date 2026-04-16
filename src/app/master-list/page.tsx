@@ -7,9 +7,32 @@ import styles from './page.module.css';
 const ROLES = ['Captain', 'Vice Captain', 'Member'] as const;
 const GENDERS = ['Male', 'Female', 'Other'] as const;
 const STATUSES = ['Active', 'Idle'] as const;
-const RANKS = ['Unranked', 'Joker', 'Jack', 'Queen', 'King', 'Ace'] as const;
+const RANKS = [
+    'Unranked',
+    'Joker (low-tier)', 'Joker (mid-tier)', 'Joker (high-tier)',
+    'Jack (low-tier)', 'Jack (mid-tier)', 'Jack (high-tier)',
+    'Queen (low-tier)', 'Queen (mid-tier)', 'Queen (high-tier)',
+    'King (low-tier)', 'King (mid-tier)', 'King (high-tier)',
+    'Ace (low-tier)', 'Ace (mid-tier)', 'Ace (high-tier)',
+    'Joker', 'Jack', 'Queen', 'King', 'Ace'
+] as const;
 
 const RANK_LABELS: Record<string, string> = {
+    'Joker (low-tier)': '🃏 Joker (low-tier)',
+    'Joker (mid-tier)': '🃏 Joker (mid-tier)',
+    'Joker (high-tier)': '🃏 Joker (high-tier)',
+    'Jack (low-tier)': '♠ Jack (low-tier)',
+    'Jack (mid-tier)': '♠ Jack (mid-tier)',
+    'Jack (high-tier)': '♠ Jack (high-tier)',
+    'Queen (low-tier)': '♛ Queen (low-tier)',
+    'Queen (mid-tier)': '♛ Queen (mid-tier)',
+    'Queen (high-tier)': '♛ Queen (high-tier)',
+    'King (low-tier)': '♔ King (low-tier)',
+    'King (mid-tier)': '♔ King (mid-tier)',
+    'King (high-tier)': '♔ King (high-tier)',
+    'Ace (low-tier)': '◆ Ace (low-tier)',
+    'Ace (mid-tier)': '◆ Ace (mid-tier)',
+    'Ace (high-tier)': '◆ Ace (high-tier)',
     Joker: '🃏 Joker',
     Jack: '♠ Jack',
     Queen: '♛ Queen',
@@ -134,7 +157,9 @@ export default function MasterList() {
 
     const getRankClass = (rank?: string) => {
         if (!rank || rank === 'Unranked') return styles.rankUnranked;
-        return styles[`rank${rank}`] || styles.rankUnranked;
+        // Extract base rank (e.g., "Joker" from "Joker (low-tier)")
+        const baseRank = rank.split(' ')[0];
+        return styles[`rank${baseRank}`] || styles.rankUnranked;
     };
 
     return (
