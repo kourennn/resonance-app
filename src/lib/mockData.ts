@@ -15,6 +15,10 @@ export type Member = {
   image?: string;
   last_division_1?: string;
   last_division_2?: string;
+  rank_score?: number;
+  motto?: string;
+  top_characters?: string[];
+  birthday?: string;
 };
 
 export const members: Member[] = [

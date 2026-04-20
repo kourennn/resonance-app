@@ -47,6 +47,10 @@ type FormData = {
     gender: 'Male' | 'Female' | 'Other';
     division: string;
     status: 'Active' | 'Idle';
+    rank_score?: number;
+    birthday?: string;
+    motto?: string;
+    top_characters?: string; // Edit as comma separated string
 };
 
 const defaultForm: FormData = {
@@ -55,6 +59,10 @@ const defaultForm: FormData = {
     gender: 'Male',
     division: 'Unassigned',
     status: 'Active',
+    rank_score: 0,
+    motto: '',
+    top_characters: '',
+    birthday: '',
 };
 
 export default function MasterList() {
@@ -124,15 +132,27 @@ export default function MasterList() {
             role: member.role,
             gender: member.gender,
             rank: member.rank || 'Unranked',
+            rank_score: member.rank_score ?? 0,
+            birthday: member.birthday || '',
+            motto: member.motto || '',
+            top_characters: member.top_characters ? member.top_characters.join(', ') : '',
         });
     };
 
     const handleSaveEdit = (id: string) => {
+        const topCharactersArray = editForm.top_characters
+            ? editForm.top_characters.split(',').map((s: string) => s.trim()).filter((s: string) => s)
+            : [];
+
         updateMember(id, {
             name: editForm.name,
             role: editForm.role as any,
             gender: editForm.gender as any,
             rank: (editForm.rank as any) || 'Unranked',
+            rank_score: Number(editForm.rank_score) || 0,
+            birthday: editForm.birthday || undefined,
+            motto: editForm.motto || undefined,
+            top_characters: topCharactersArray,
         });
         setEditingId(null);
     };
@@ -144,12 +164,20 @@ export default function MasterList() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.name.trim()) return;
+        const topCharactersArray = form.top_characters
+            ? form.top_characters.split(',').map(s => s.trim()).filter(s => s)
+            : [];
+
         addMember({
             name: form.name.trim(),
             role: form.role,
             gender: form.gender,
             division: form.division,
             status: form.status,
+            rank_score: Number(form.rank_score) || 0,
+            birthday: form.birthday || undefined,
+            motto: form.motto || undefined,
+            top_characters: topCharactersArray,
         });
         setForm(defaultForm);
         setShowForm(false);
@@ -277,6 +305,22 @@ export default function MasterList() {
                                 {divisions.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
                         </div>
+                        <div className={styles.field}>
+                            <label>Rank Score</label>
+                            <input type="number" step="0.01" name="rank_score" placeholder="0.0" className="glass" value={form.rank_score} onChange={handleFormChange} />
+                        </div>
+                        <div className={styles.field}>
+                            <label>Birthday</label>
+                            <input type="date" name="birthday" className="glass" value={form.birthday} onChange={handleFormChange} />
+                        </div>
+                        <div className={styles.field}>
+                            <label>Motto</label>
+                            <input type="text" name="motto" placeholder="Member's quote" className="glass" value={form.motto} onChange={handleFormChange} />
+                        </div>
+                        <div className={styles.field}>
+                            <label>Top Characters (comma separated)</label>
+                            <input type="text" name="top_characters" placeholder="Char1, Char2, Char3" className="glass" value={form.top_characters} onChange={handleFormChange} />
+                        </div>
                     </div>
                     <div className={styles.formActions}>
                         <button type="submit" className={styles.submitBtn}>✓ Induct Member</button>
@@ -292,6 +336,10 @@ export default function MasterList() {
                             <th>Role</th>
                             <th>Gender</th>
                             <th>Rank</th>
+                            <th>Score</th>
+                            <th>Birthday</th>
+                            <th>Motto</th>
+                            <th>T. Chars</th>
                             <th>Division</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -359,6 +407,61 @@ export default function MasterList() {
                                         <span className={`${styles.rankBadge} ${getRankClass(member.rank)}`}>
                                             {RANK_LABELS[member.rank || 'Unranked']}
                                         </span>
+                                    )}
+                                </td>
+                                <td>
+                                    {editingId === member.id ? (
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            name="rank_score"
+                                            value={editForm.rank_score}
+                                            onChange={handleEditChange}
+                                            className={styles.inlineInput}
+                                            style={{ width: '60px' }}
+                                        />
+                                    ) : (
+                                        <span className={styles.scoreText}>{member.rank_score || 0}</span>
+                                    )}
+                                </td>
+                                <td>
+                                    {editingId === member.id ? (
+                                        <input
+                                            type="date"
+                                            name="birthday"
+                                            value={editForm.birthday || ''}
+                                            onChange={handleEditChange}
+                                            className={styles.inlineInput}
+                                        />
+                                    ) : (
+                                        member.birthday ? new Date(member.birthday).toLocaleDateString() : '-'
+                                    )}
+                                </td>
+                                <td>
+                                    {editingId === member.id ? (
+                                        <input
+                                            type="text"
+                                            name="motto"
+                                            value={editForm.motto || ''}
+                                            onChange={handleEditChange}
+                                            className={styles.inlineInput}
+                                        />
+                                    ) : (
+                                        member.motto ? <span title={member.motto}>{member.motto.substring(0, 10)}{member.motto.length > 10 ? '...' : ''}</span> : '-'
+                                    )}
+                                </td>
+                                <td>
+                                    {editingId === member.id ? (
+                                        <input
+                                            type="text"
+                                            name="top_characters"
+                                            value={editForm.top_characters || ''}
+                                            onChange={handleEditChange}
+                                            className={styles.inlineInput}
+                                            placeholder="A, B, C"
+                                        />
+                                    ) : (
+                                        member.top_characters?.length ? <span title={member.top_characters.join(', ')}>{member.top_characters.length} chars</span> : '-'
                                     )}
                                 </td>
                                 <td><span className={styles.divisionTag}>{member.division}</span></td>
