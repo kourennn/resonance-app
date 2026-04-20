@@ -654,3 +654,16 @@
     line-height: 1.8;
     color: rgba(255, 255, 255, 0.85);
 }
+
+.leaderboardFooter {
+    text-align: center;
+    padding: 24px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+

@@ -164,7 +164,8 @@ export default function PublicMobileView() {
     const leaderboardMembers = useMemo(() => {
         return activeMembers
             .filter(m => m.rank && m.rank !== 'Unranked' && m.rank_score && m.rank_score > 0)
-            .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+            .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0))
+            .slice(0, 10);
     }, [activeMembers]);
 
     const formattedDate = useMemo(() => {
@@ -301,9 +302,10 @@ export default function PublicMobileView() {
                             </div>
                         </div>
                     ))
-                ) : (
-                    <div className={styles.emptyState}>No ranked members to display yet.</div>
                 )}
+            </div>
+            <div className={styles.leaderboardFooter}>
+                <p>Raise your rank to climb the leaderboards!</p>
             </div>
         </div>
     );
