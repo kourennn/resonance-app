@@ -357,6 +357,15 @@
     font-size: 0.95rem;
 }
 
+.mottoCell {
+    min-width: 250px;
+}
+
+.charsCell {
+    min-width: 180px;
+}
+
+
 .nameCell {
     display: flex;
     align-items: center;

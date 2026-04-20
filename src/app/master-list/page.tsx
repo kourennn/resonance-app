@@ -338,8 +338,8 @@ export default function MasterList() {
                             <th>Rank</th>
                             <th>Score</th>
                             <th>Birthday</th>
-                            <th>Motto</th>
-                            <th>T. Chars</th>
+                            <th className={styles.mottoCell}>Motto</th>
+                            <th className={styles.charsCell}>T. Chars</th>
                             <th>Division</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -437,7 +437,7 @@ export default function MasterList() {
                                         member.birthday ? new Date(member.birthday).toLocaleDateString() : '-'
                                     )}
                                 </td>
-                                <td>
+                                <td className={styles.mottoCell}>
                                     {editingId === member.id ? (
                                         <input
                                             type="text"
@@ -450,7 +450,7 @@ export default function MasterList() {
                                         member.motto ? <span title={member.motto}>{member.motto.substring(0, 10)}{member.motto.length > 10 ? '...' : ''}</span> : '-'
                                     )}
                                 </td>
-                                <td>
+                                <td className={styles.charsCell}>
                                     {editingId === member.id ? (
                                         <input
                                             type="text"
