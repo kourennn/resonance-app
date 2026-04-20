@@ -39,6 +39,24 @@ function calculateAge(birthday?: string) {
     return Math.abs(age_dt.getUTCFullYear() - 1970);
 }
 
+function getDynamicRank(score: number): string {
+    if (typeof score !== 'number' || score < 1.0) return 'Unranked';
+    
+    let baseRank = '';
+    if (score >= 9.0) baseRank = 'Ace';
+    else if (score >= 7.9) baseRank = 'King';
+    else if (score >= 6.0) baseRank = 'Queen';
+    else if (score >= 4.5) baseRank = 'Jack';
+    else baseRank = 'Joker';
+    
+    let tier = '';
+    if (score >= 7.0) tier = 'high-tier';
+    else if (score >= 5.0) tier = 'mid-tier';
+    else tier = 'low-tier';
+    
+    return `${baseRank} (${tier})`;
+}
+
 function isBirthdayToday(birthday?: string) {
     if (!birthday) return false;
     const dob = new Date(birthday);
@@ -162,13 +180,13 @@ export default function PublicMobileView() {
     }, [activeMembers, selectedDivision, searchQuery]);
 
     const leaderboardMembers = useMemo(() => {
-        const sorted = [...activeMembers]
+        const ranked = activeMembers.filter(m => (m.rank_score || 0) > 0);
+        const sorted = [...ranked]
             .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
         
         if (sorted.length <= 10) return sorted;
         
         const tenthScore = sorted[9].rank_score || 0;
-        // Include everyone who has a score >= the 10th person's score to handle ties at the cutoff
         return sorted.filter(m => (m.rank_score || 0) >= tenthScore);
     }, [activeMembers]);
 
@@ -285,16 +303,18 @@ export default function PublicMobileView() {
                         let currentRank = 0;
                         let lastScore = -1;
                         
-                        return leaderboardMembers.map((member, index) => {
+                        const items = leaderboardMembers.map((member, index) => {
                             if (member.rank_score !== lastScore) {
-                                currentRank++;
+                                currentRank = index + 1;
                             }
                             lastScore = member.rank_score || 0;
+
+                            const dynRank = getDynamicRank(member.rank_score || 0);
 
                             return (
                                 <div 
                                     key={member.id} 
-                                    className={`${styles.memberItem} ${getRankThemeClass(member.rank)}`}
+                                    className={`${styles.memberItem} ${getRankThemeClass(dynRank)}`}
                                     onClick={() => setSelectedMember(member)}
                                 >
                                     <div className={styles.leaderboardRank}>
@@ -310,13 +330,32 @@ export default function PublicMobileView() {
                                         </div>
                                         <div className={styles.memberMetaRow}>
                                             <span className={styles.rankBadge}>
-                                                {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
+                                                {RANK_LABELS[dynRank] || dynRank}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                             );
                         });
+
+                        if (items.length < 10) {
+                            for (let i = items.length; i < 10; i++) {
+                                items.push(
+                                    <div key={`empty-${i}`} className={`${styles.memberItem} ${styles.rankUnranked}`} style={{ opacity: 0.4, cursor: 'default' }}>
+                                        <div className={styles.leaderboardRank}>#{i + 1}</div>
+                                        <div className={styles.memberAvatar}>?</div>
+                                        <div className={styles.memberInfo}>
+                                            <div className={styles.memberNameRow}>
+                                                <span className={styles.memberName}>Unranked Spot</span>
+                                                <span className={styles.scoreBadge}>-- PTS</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                        }
+
+                        return items;
                      })()
                 ) : (
                     <div className={styles.emptyState}>No ranked members to display yet.</div>
