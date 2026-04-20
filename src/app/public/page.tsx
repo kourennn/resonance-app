@@ -162,10 +162,15 @@ export default function PublicMobileView() {
     }, [activeMembers, selectedDivision, searchQuery]);
 
     const leaderboardMembers = useMemo(() => {
-        return activeMembers
+        const sorted = activeMembers
             .filter(m => m.rank && m.rank !== 'Unranked' && m.rank_score && m.rank_score > 0)
-            .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0))
-            .slice(0, 10);
+            .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+        
+        if (sorted.length <= 10) return sorted;
+        
+        const tenthScore = sorted[9].rank_score || 0;
+        // Include everyone who has a score >= the 10th person's score to handle ties at the cutoff
+        return sorted.filter(m => (m.rank_score || 0) >= tenthScore);
     }, [activeMembers]);
 
     const formattedDate = useMemo(() => {
