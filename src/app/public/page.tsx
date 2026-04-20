@@ -162,8 +162,7 @@ export default function PublicMobileView() {
     }, [activeMembers, selectedDivision, searchQuery]);
 
     const leaderboardMembers = useMemo(() => {
-        const sorted = activeMembers
-            .filter(m => (m.rank && m.rank !== 'Unranked') || (m.rank_score && m.rank_score > 0))
+        const sorted = [...activeMembers]
             .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
         
         if (sorted.length <= 10) return sorted;
