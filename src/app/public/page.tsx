@@ -162,7 +162,7 @@ export default function PublicMobileView() {
     }, [activeMembers, selectedDivision, searchQuery]);
 
     const leaderboardMembers = useMemo(() => {
-        const sorted = members
+        const sorted = activeMembers
             .filter(m => m.rank && m.rank !== 'Unranked' && m.rank_score !== undefined && m.rank_score !== null)
             .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
         
