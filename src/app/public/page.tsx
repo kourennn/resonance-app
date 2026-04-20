@@ -277,31 +277,45 @@ export default function PublicMobileView() {
             </div>
             <div className={styles.memberList}>
                 {leaderboardMembers.length > 0 ? (
-                     leaderboardMembers.map((member, index) => (
-                        <div 
-                            key={member.id} 
-                            className={`${styles.memberItem} ${getRankThemeClass(member.rank)}`}
-                            onClick={() => setSelectedMember(member)}
-                        >
-                            <div className={styles.leaderboardRank}>
-                                #{index + 1}
-                            </div>
-                            <div className={styles.memberAvatar}>
-                                {member.name ? member.name[0].toUpperCase() : '?'}
-                            </div>
-                            <div className={styles.memberInfo}>
-                                <div className={styles.memberNameRow}>
-                                    <span className={styles.memberName}>{member.name || 'Unknown'}</span>
-                                    <span className={styles.scoreBadge}>{member.rank_score} PTS</span>
+                     (() => {
+                        let currentRank = 1;
+                        let lastScore = -1;
+                        
+                        return leaderboardMembers.map((member, index) => {
+                            if (member.rank_score !== lastScore) {
+                                currentRank = index + 1;
+                            }
+                            lastScore = member.rank_score || 0;
+
+                            return (
+                                <div 
+                                    key={member.id} 
+                                    className={`${styles.memberItem} ${getRankThemeClass(member.rank)}`}
+                                    onClick={() => setSelectedMember(member)}
+                                >
+                                    <div className={styles.leaderboardRank}>
+                                        #{currentRank}
+                                    </div>
+                                    <div className={styles.memberAvatar}>
+                                        {member.name ? member.name[0].toUpperCase() : '?'}
+                                    </div>
+                                    <div className={styles.memberInfo}>
+                                        <div className={styles.memberNameRow}>
+                                            <span className={styles.memberName}>{member.name || 'Unknown'}</span>
+                                            <span className={styles.scoreBadge}>{member.rank_score} PTS</span>
+                                        </div>
+                                        <div className={styles.memberMetaRow}>
+                                            <span className={styles.rankBadge}>
+                                                {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className={styles.memberMetaRow}>
-                                    <span className={styles.rankBadge}>
-                                        {member.rank && member.rank !== 'Unranked' ? RANK_LABELS[member.rank] || member.rank : 'Unranked'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ))
+                            );
+                        });
+                     })()
+                ) : (
+                    <div className={styles.emptyState}>No ranked members to display yet.</div>
                 )}
             </div>
             <div className={styles.leaderboardFooter}>
