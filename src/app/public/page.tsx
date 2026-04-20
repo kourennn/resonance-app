@@ -283,12 +283,12 @@ export default function PublicMobileView() {
             <div className={styles.memberList}>
                 {leaderboardMembers.length > 0 ? (
                      (() => {
-                        let currentRank = 1;
+                        let currentRank = 0;
                         let lastScore = -1;
                         
                         return leaderboardMembers.map((member, index) => {
                             if (member.rank_score !== lastScore) {
-                                currentRank = index + 1;
+                                currentRank++;
                             }
                             lastScore = member.rank_score || 0;
 
