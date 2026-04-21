@@ -181,7 +181,25 @@ export default function PublicMobileView() {
 
     const leaderboardMembers = useMemo(() => {
         const ranked = activeMembers.filter(m => (m.rank_score || 0) > 0);
-        return [...ranked].sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+        const sorted = [...ranked]
+            .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+        
+        let currentRank = 0;
+        let lastScore = -1;
+        const validMembers = [];
+        
+        for (const member of sorted) {
+            if (member.rank_score !== lastScore) {
+                currentRank++;
+            }
+            lastScore = member.rank_score || 0;
+            
+            if (currentRank > 10) break;
+            
+            validMembers.push(member);
+        }
+        
+        return validMembers;
     }, [activeMembers]);
 
     const formattedDate = useMemo(() => {
@@ -334,9 +352,10 @@ export default function PublicMobileView() {
 
                         if (items.length < 10) {
                             for (let i = items.length; i < 10; i++) {
+                                currentRank++;
                                 items.push(
                                     <div key={`empty-${i}`} className={`${styles.memberItem} ${styles.rankUnranked}`} style={{ opacity: 0.4, cursor: 'default' }}>
-                                        <div className={styles.leaderboardRank}>#{i + 1}</div>
+                                        <div className={styles.leaderboardRank}>#{currentRank}</div>
                                         <div className={styles.memberAvatar}>?</div>
                                         <div className={styles.memberInfo}>
                                             <div className={styles.memberNameRow}>
