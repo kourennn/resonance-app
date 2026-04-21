@@ -305,7 +305,7 @@ export default function PublicMobileView() {
                         
                         const items = leaderboardMembers.map((member, index) => {
                             if (member.rank_score !== lastScore) {
-                                currentRank = index + 1;
+                                currentRank++;
                             }
                             lastScore = member.rank_score || 0;
 
