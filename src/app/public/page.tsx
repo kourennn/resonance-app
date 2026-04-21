@@ -181,13 +181,7 @@ export default function PublicMobileView() {
 
     const leaderboardMembers = useMemo(() => {
         const ranked = activeMembers.filter(m => (m.rank_score || 0) > 0);
-        const sorted = [...ranked]
-            .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
-        
-        if (sorted.length <= 10) return sorted;
-        
-        const tenthScore = sorted[9].rank_score || 0;
-        return sorted.filter(m => (m.rank_score || 0) >= tenthScore);
+        return [...ranked].sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
     }, [activeMembers]);
 
     const formattedDate = useMemo(() => {
