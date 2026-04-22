@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '@/context/AppContext';
 import { Member } from '@/lib/mockData';
 import styles from './page.module.css';
@@ -280,10 +281,11 @@ export default function PublicMobileView() {
                 <div className={styles.memberList}>
                     {displayedMembers.length > 0 ? (
                         displayedMembers.map(member => (
-                            <div 
+                            <motion.div 
                                 key={member.id} 
                                 className={`${styles.memberItem} ${getRankThemeClass(member.rank)}`}
                                 onClick={() => setSelectedMember(member)}
+                                whileTap={{ scale: 0.95 }}
                             >
                                 <div className={styles.memberAvatar}>
                                     {member.name ? member.name[0].toUpperCase() : '?'}
@@ -308,7 +310,7 @@ export default function PublicMobileView() {
                                         )}
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))
                     ) : (
                         <div className={styles.emptyState}>No active members found.</div>
@@ -339,10 +341,11 @@ export default function PublicMobileView() {
                             const dynRank = getDynamicRank(member.rank_score || 0);
 
                             return (
-                                <div 
+                                <motion.div 
                                     key={member.id} 
                                     className={`${styles.memberItem} ${getRankThemeClass(dynRank)}`}
                                     onClick={() => setSelectedMember(member)}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     <div className={styles.leaderboardRank}>
                                         #{currentRank}
@@ -361,7 +364,7 @@ export default function PublicMobileView() {
                                             </span>
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             );
                         });
 
@@ -432,13 +435,14 @@ export default function PublicMobileView() {
 
             <div className={styles.tabBar}>
                 {(['Roster', 'Leaderboards', 'Guide', 'Contact'] as Tab[]).map(tab => (
-                    <button 
+                    <motion.button 
                         key={tab}
                         className={`${styles.tabBtn} ${activeTab === tab ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(tab)}
+                        whileTap={{ scale: 0.93 }}
                     >
                         {tab}
-                    </button>
+                    </motion.button>
                 ))}
             </div>
 
@@ -490,63 +494,86 @@ High tier (7.0 - 10.10)`}
             </footer>
 
             {/* Profile Modal */}
-            {selectedMember && (
-                <div className={styles.modalOverlay} onClick={(e) => {
-                    if (e.target === e.currentTarget) setSelectedMember(null);
-                }}>
-                    <div className={`${styles.profileModal} ${getRankThemeClass(selectedMember.rank)} animate-fade`}>
-                        <button className={styles.closeModalBtn} onClick={() => setSelectedMember(null)}>✕</button>
-                        
-                        <div className={styles.modalHeader}>
-                            <div className={styles.modalAvatar}>
-                                {selectedMember.name ? selectedMember.name[0].toUpperCase() : '?'}
-                            </div>
-                            <h2 className={styles.modalName}>
-                                {selectedMember.name}
-                                {isBirthdayToday(selectedMember.birthday) && <span title="Birthday Today!" className={styles.modalBdayIcon}>🎂</span>}
-                            </h2>
-                            <p className={styles.modalRank}>{RANK_LABELS[selectedMember.rank || 'Unranked'] || 'Unranked'}</p>
+            <AnimatePresence>
+                {selectedMember && (
+                    <motion.div 
+                        className={styles.modalOverlay} 
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) setSelectedMember(null);
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <motion.div 
+                            className={`${styles.profileModal} ${getRankThemeClass(selectedMember.rank)}`}
+                            initial={{ y: "100%", opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: "100%", opacity: 0 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            drag="y"
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            dragElastic={0.2}
+                            onDragEnd={(e, { offset, velocity }) => {
+                                if (offset.y > 100 || velocity.y > 500) {
+                                    setSelectedMember(null);
+                                }
+                            }}
+                        >
+                            <div className={styles.dragHandle}></div>
+                            <button className={styles.closeModalBtn} onClick={() => setSelectedMember(null)}>✕</button>
                             
-                            {selectedMember.motto && (
-                                <p className={styles.modalMotto}>"{selectedMember.motto}"</p>
-                            )}
-                        </div>
+                            <div className={styles.modalHeader}>
+                                <div className={styles.modalAvatar}>
+                                    {selectedMember.name ? selectedMember.name[0].toUpperCase() : '?'}
+                                </div>
+                                <h2 className={styles.modalName}>
+                                    {selectedMember.name}
+                                    {isBirthdayToday(selectedMember.birthday) && <span title="Birthday Today!" className={styles.modalBdayIcon}>🎂</span>}
+                                </h2>
+                                <p className={styles.modalRank}>{RANK_LABELS[selectedMember.rank || 'Unranked'] || 'Unranked'}</p>
+                                
+                                {selectedMember.motto && (
+                                    <p className={styles.modalMotto}>"{selectedMember.motto}"</p>
+                                )}
+                            </div>
 
-                        <div className={styles.modalStatsGrid}>
-                            <div className={styles.statBox}>
-                                <span className={styles.statLabel}>Role</span>
-                                <span className={`${styles.statValue} ${selectedMember.role ? styles[selectedMember.role.replace(' ', '')] : ''}`}>{selectedMember.role}</span>
-                            </div>
-                            <div className={styles.statBox}>
-                                <span className={styles.statLabel}>Division</span>
-                                <span className={styles.statValue}>{selectedMember.division}</span>
-                            </div>
-                            <div className={styles.statBox}>
-                                <span className={styles.statLabel}>Score</span>
-                                <span className={styles.statValue}>{selectedMember.rank_score || 0} pts</span>
-                            </div>
-                            {calculateAge(selectedMember.birthday) && (
+                            <div className={styles.modalStatsGrid}>
                                 <div className={styles.statBox}>
-                                    <span className={styles.statLabel}>Age</span>
-                                    <span className={styles.statValue}>{calculateAge(selectedMember.birthday)}</span>
+                                    <span className={styles.statLabel}>Role</span>
+                                    <span className={`${styles.statValue} ${selectedMember.role ? styles[selectedMember.role.replace(' ', '')] : ''}`}>{selectedMember.role}</span>
+                                </div>
+                                <div className={styles.statBox}>
+                                    <span className={styles.statLabel}>Division</span>
+                                    <span className={styles.statValue}>{selectedMember.division}</span>
+                                </div>
+                                <div className={styles.statBox}>
+                                    <span className={styles.statLabel}>Score</span>
+                                    <span className={styles.statValue}>{selectedMember.rank_score || 0} pts</span>
+                                </div>
+                                {calculateAge(selectedMember.birthday) && (
+                                    <div className={styles.statBox}>
+                                        <span className={styles.statLabel}>Age</span>
+                                        <span className={styles.statValue}>{calculateAge(selectedMember.birthday)}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {selectedMember.top_characters && selectedMember.top_characters.length > 0 && (
+                                <div className={styles.modalCharacters}>
+                                    <span className={styles.charactersLabel}>Top Characters</span>
+                                    <div className={styles.charactersList}>
+                                        {selectedMember.top_characters.map((char, i) => (
+                                            <span key={i} className={styles.characterTag}>{char}</span>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
-                        </div>
-
-                        {selectedMember.top_characters && selectedMember.top_characters.length > 0 && (
-                            <div className={styles.modalCharacters}>
-                                <span className={styles.charactersLabel}>Top Characters</span>
-                                <div className={styles.charactersList}>
-                                    {selectedMember.top_characters.map((char, i) => (
-                                        <span key={i} className={styles.characterTag}>{char}</span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        
-                    </div>
-                </div>
-            )}
+                            
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
