@@ -39,13 +39,15 @@
     justify-content: center;
     gap: 12px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .mobileHeader h1 {
-    font-size: 2.2rem;
+    font-size: clamp(1.4rem, 6vw, 2.2rem);
     letter-spacing: 0.05em;
     margin: 0;
     text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+    white-space: nowrap;
 }
 
 .musicToggle {
@@ -498,6 +500,24 @@
     border: 1px solid var(--glass-border);
 }
 .comingSoonBox h2 { margin-bottom: 12px; color: var(--text-primary); font-size: 2rem;}
+
+.contactLink {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(34, 211, 238, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.contactLink:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(34, 211, 238, 0.4));
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+}
 
 /* --- Leaderboards --- */
 .leaderboardRank {

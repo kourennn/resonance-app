@@ -485,7 +485,10 @@ High tier (7.0 - 10.10)`}
             {activeTab === 'Contact' && (
                 <div className={`${styles.comingSoonBox} glass animate-fade`}>
                     <h2>Contact Us</h2>
-                    <p>Coming Soon...</p>
+                    <p>Follow us on TikTok!</p>
+                    <a href="https://www.tiktok.com/@group1_official?_r=1&_t=ZS-95kvMl9gNgi" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>
+                        Group One Official
+                    </a>
                 </div>
             )}
 
