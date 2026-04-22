@@ -87,6 +87,21 @@ export default function PublicMobileView() {
     const [selectedDivision, setSelectedDivision] = useState<string>('All Divisions');
     const prevDivisionsRef = useRef<string[]>([]);
 
+    // Audio State
+    const [isPlaying, setIsPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const toggleMusic = () => {
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+            } else {
+                audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
+
     useEffect(() => {
         setHasMounted(true);
         const now = new Date();
@@ -383,7 +398,13 @@ export default function PublicMobileView() {
     return (
         <div className={styles.mobileContainer}>
             <header className={styles.mobileHeader}>
-                <h1 className="text-gradient">RESONANCE 余情</h1>
+                <div className={styles.headerTopRow}>
+                    <h1 className="text-gradient">RESONANCE 余情</h1>
+                    <button className={styles.musicToggle} onClick={toggleMusic} title={isPlaying ? "Pause Music" : "Play Music"}>
+                        {isPlaying ? '🔊' : '🔈'}
+                    </button>
+                    <audio ref={audioRef} src="/bgm.mp3" loop preload="auto" />
+                </div>
                 
                 {hasMounted && (
                     <>
