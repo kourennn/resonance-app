@@ -66,7 +66,7 @@ const defaultForm: FormData = {
 };
 
 export default function MasterList() {
-    const { members, divisions, addMember, updateMemberStatus, updateMember, deleteMember, resetAllMembers, isLoading } = useAppContext();
+    const { members, divisions, addMember, updateMemberStatus, updateMember, deleteMember, resetAllMembers, resetAllScores, resetAllRanks, isLoading } = useAppContext();
 
     if (isLoading) {
         return (
@@ -88,6 +88,7 @@ export default function MasterList() {
     const [form, setForm] = useState<FormData>(defaultForm);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<FormData & { rank: string }>>({});
+    const [resetModal, setResetModal] = useState<'scores' | 'ranks' | null>(null);
 
     const filteredMembers = members.filter(m => {
         const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase());
@@ -183,6 +184,15 @@ export default function MasterList() {
         setShowForm(false);
     };
 
+    const confirmReset = (targetStatus: 'Active' | 'Idle' | 'All') => {
+        if (resetModal === 'scores') {
+            resetAllScores(targetStatus);
+        } else if (resetModal === 'ranks') {
+            resetAllRanks(targetStatus);
+        }
+        setResetModal(null);
+    };
+
     const getRankClass = (rank?: string) => {
         if (!rank || rank === 'Unranked') return styles.rankUnranked;
         // Extract base rank (e.g., "Joker" from "Joker (low-tier)")
@@ -262,6 +272,12 @@ export default function MasterList() {
                                 </div>
                             )}
                         </div>
+                        <button className={styles.resetScoresBtn} onClick={() => setResetModal('scores')}>
+                            🔄 Reset Scores
+                        </button>
+                        <button className={styles.resetRanksBtn} onClick={() => setResetModal('ranks')}>
+                            ⭐ Reset Ranks
+                        </button>
                         <button className={styles.resetRosterBtn} onClick={resetAllMembers}>
                             ⚠️ Reset Roster
                         </button>
@@ -271,6 +287,21 @@ export default function MasterList() {
                     </div>
                 </div>
             </header>
+
+            {resetModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.resetModal}>
+                        <h3>Reset {resetModal === 'scores' ? 'Scores' : 'Ranks'}</h3>
+                        <p>Which members do you want to reset?</p>
+                        <div className={styles.resetOptions}>
+                            <button onClick={() => confirmReset('Active')}>Active Members Only</button>
+                            <button onClick={() => confirmReset('Idle')}>Idle Members Only</button>
+                            <button onClick={() => confirmReset('All')}>All Members</button>
+                        </div>
+                        <button className={styles.cancelBtn} onClick={() => setResetModal(null)}>Cancel</button>
+                    </div>
+                </div>
+            )}
 
             {showForm && (
                 <form onSubmit={handleSubmit} className={`${styles.addForm} glass`}>

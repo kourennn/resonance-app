@@ -18,6 +18,8 @@ type AppContextType = {
     deleteDivision: (divisionName: string) => void;
     updateDivisionName: (oldName: string, newName: string) => void;
     resetAllMembers: () => Promise<void>;
+    resetAllScores: (targetStatus: 'Active' | 'Idle' | 'All') => Promise<void>;
+    resetAllRanks: (targetStatus: 'Active' | 'Idle' | 'All') => Promise<void>;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -176,6 +178,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const resetAllScores = async (targetStatus: 'Active' | 'Idle' | 'All') => {
+        // Optimistic UI updates
+        setMembers(prev => prev.map(m => {
+            if (targetStatus === 'All' || m.status === targetStatus) {
+                return { ...m, rank_score: 0 };
+            }
+            return m;
+        }));
+
+        // Supabase updates
+        let query = supabase.from('members').update({ rank_score: 0 });
+        if (targetStatus !== 'All') {
+            query = query.eq('status', targetStatus);
+        } else {
+            query = query.neq('id', '0');
+        }
+        await query;
+    };
+
+    const resetAllRanks = async (targetStatus: 'Active' | 'Idle' | 'All') => {
+        // Optimistic UI updates
+        setMembers(prev => prev.map(m => {
+            if (targetStatus === 'All' || m.status === targetStatus) {
+                return { ...m, rank: 'Unranked' as const };
+            }
+            return m;
+        }));
+
+        // Supabase updates
+        let query = supabase.from('members').update({ rank: 'Unranked' });
+        if (targetStatus !== 'All') {
+            query = query.eq('status', targetStatus);
+        } else {
+            query = query.neq('id', '0');
+        }
+        await query;
+    };
+
     return (
         <AppContext.Provider value={{
             members,
@@ -190,7 +230,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             addDivision,
             deleteDivision,
             updateDivisionName,
-            resetAllMembers
+            resetAllMembers,
+            resetAllScores,
+            resetAllRanks
         }}>
             {children}
         </AppContext.Provider>

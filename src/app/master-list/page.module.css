@@ -313,6 +313,38 @@
     box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
 }
 
+.resetScoresBtn {
+    background: transparent;
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.resetScoresBtn:hover {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+}
+
+.resetRanksBtn {
+    background: transparent;
+    color: #3b82f6; /* Blue */
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.resetRanksBtn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+}
+
 .resetRosterBtn {
     background: transparent;
     color: #f43f5e;
@@ -585,4 +617,80 @@
     background: rgba(255, 42, 133, 0.1);
     border: 1px solid rgba(255, 42, 133, 0.35);
     text-shadow: 0 0 6px rgba(255, 42, 133, 0.3);
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.resetModal {
+    background: #1a1a1e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    padding: 28px;
+    border-radius: 16px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+}
+
+.resetModal h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.resetModal p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.resetOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.resetOptions button {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    font-weight: 500;
+}
+
+.resetOptions button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+}
+
+.resetModal .cancelBtn {
+    margin-top: 8px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.resetModal .cancelBtn:hover {
+    color: var(--text-primary);
 }

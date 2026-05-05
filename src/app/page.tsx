@@ -30,11 +30,12 @@ export default function Home() {
     setLastShuffle(saved);
 
     // Timer logic
-    const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59);
-    
     const updateTimer = () => {
-      const currentTime = new Date();
-      const diff = endOfMonth.getTime() - currentTime.getTime();
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+      const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+      const diff = endOfMonth.getTime() - now.getTime();
 
       if (diff <= 0) {
         // Check if shuffle happened this month
@@ -68,7 +69,7 @@ export default function Home() {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [currentMonth, currentYear, now]);
+  }, []);
 
   // Statistics calculation
   const stats = useMemo(() => {
